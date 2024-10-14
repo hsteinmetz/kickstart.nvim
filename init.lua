@@ -647,9 +647,6 @@ require('lazy').setup({
         denols = {
           root_dir = require('lspconfig').util.root_pattern 'deno.json',
         },
-        ts_ls = {
-          root_dir = require('lspconfig').util.root_pattern 'package.json',
-        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -926,6 +923,21 @@ require('lazy').setup({
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
 
+  {
+    'pmizio/typescript-tools.nvim',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+    },
+    opts = {},
+    config = function()
+      require('typescript-tools').setup {
+        settings = {
+          root_dir = require('lspconfig').util.root_pattern 'package.json',
+        },
+      }
+    end,
+  },
+
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -936,11 +948,11 @@ require('lazy').setup({
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
   -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
+  require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
