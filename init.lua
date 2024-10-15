@@ -647,6 +647,8 @@ require('lazy').setup({
         denols = {
           root_dir = require('lspconfig').util.root_pattern 'deno.json',
         },
+        volar = {},
+        ts_ls = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -677,6 +679,23 @@ require('lazy').setup({
           end,
         },
       }
+
+      local mason_registry = require 'mason-registry'
+      local vue_language_server_path = mason_registry.get_package('vue-language-server'):get_install_path() .. '/node_modules/@vue/language-server'
+      require('lspconfig').ts_ls.setup {
+        init_options = {
+          plugins = {
+            {
+              name = '@vue/typescript-plugin',
+              location = vue_language_server_path,
+              languages = { 'vue' },
+            },
+          },
+        },
+        filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+      }
+
+      require('lspconfig').volar.setup {}
     end,
   },
 
@@ -831,7 +850,24 @@ require('lazy').setup({
             -- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
             group_index = 0,
           },
-          { name = 'nvim_lsp' },
+          {
+            name = 'nvim_lsp',
+            entry_filter = function(entry, ctx)
+              -- autocomplete for props and listeners in vue files
+              if ctx.filetype ~= 'vue' then
+                return true
+              end
+
+              local cursor_before_line = ctx.cursor_before_line
+              if cursor_before_line:sub(-1) == '@' then
+                return entry.completion_item.label:match '^@'
+              elseif cursor_before_line:sub(-1) == ':' then
+                return entry.completion_item.label:match '^:' and not entry.completion_item.label:match '^:on%-'
+              else
+                return true
+              end
+            end,
+          },
           { name = 'luasnip' },
           { name = 'path' },
         },
@@ -922,22 +958,7 @@ require('lazy').setup({
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
   },
-
-  {
-    'pmizio/typescript-tools.nvim',
-    dependencies = {
-      'neovim/nvim-lspconfig',
-    },
-    opts = {},
-    config = function()
-      require('typescript-tools').setup {
-        settings = {
-          root_dir = require('lspconfig').util.root_pattern 'package.json',
-        },
-      }
-    end,
-  },
-
+  --
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
