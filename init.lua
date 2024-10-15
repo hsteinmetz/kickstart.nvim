@@ -964,6 +964,8 @@ require('lazy').setup({
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
     },
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
     opts = {},
   },
 
@@ -1016,6 +1018,17 @@ vim.wo.scrolloff = 8
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.expandtab = true
+
+vim.api.nvim_create_augroup('MarkdownBullets', { clear = true })
+vim.api.nvim_create_autocmd('FileType', {
+  group = 'MarkdownBullets',
+  pattern = 'markdown',
+  callback = function()
+    vim.opt_local.formatoptions:append 'ro'
+    vim.opt_local.comments = 'b:*,b:-,b:+,b:1.,n:>,b:- [ ],b:- [x]'
+    vim.opt_local.formatlistpat = [[^\s*\d\+[\]:.)}\t ]\|^\s*[-*+]\s\+]]
+  end,
+})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
