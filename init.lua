@@ -966,7 +966,29 @@ require('lazy').setup({
     },
     ---@module 'render-markdown'
     ---@type render.md.UserConfig
-    opts = {},
+    opts = {
+      bullet = {
+        right_pad = 1,
+      },
+    },
+  },
+
+  {
+    'epwalsh/obsidian.nvim',
+    version = '*',
+    lazy = true,
+    ft = 'markdown',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+    },
+    opts = {
+      workspaces = {
+        {
+          name = 'uni',
+          path = '~/uni/notes',
+        },
+      },
+    },
   },
 
   --
@@ -1018,6 +1040,7 @@ vim.wo.scrolloff = 8
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
 vim.o.expandtab = true
+vim.o.conceallevel = 1
 
 vim.api.nvim_create_augroup('MarkdownBullets', { clear = true })
 vim.api.nvim_create_autocmd('FileType', {
