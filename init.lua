@@ -985,7 +985,7 @@ require('lazy').setup({
       workspaces = {
         {
           name = 'uni',
-          path = '~/uni/notes',
+          path = package.config:sub(1, 1) == '\\' and os.getenv 'USERPROFILE' .. '\\uni\\uni-notes' or '~/uni/notes',
         },
       },
     },
