@@ -14,6 +14,8 @@ vim.keymap.set('i', '<A-j>', '<esc><cmd>m .+1<cr>==gi', { desc = 'Move line down
 
 -- General
 vim.keymap.set('n', '<leader>fn', '<cmd>enew<cr>')
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
 
 -- Windows
 vim.keymap.set('n', '<leader>-', '<C-W>s', { desc = 'Split horizontally' })
