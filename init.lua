@@ -401,7 +401,7 @@ require('lazy').setup({
             },
           },
           layout_strategy = 'vertical',
-          preview = false,
+          preview = true,
         },
       }
 
@@ -423,6 +423,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
       vim.keymap.set('n', '<leader>sy', builtin.lsp_document_symbols, { desc = '[S]earch document S[y]mbols' })
       vim.keymap.set('n', '<leader>sY', builtin.lsp_workspace_symbols, { desc = '[S]earch workspace S[Y]mbols' })
+      vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
