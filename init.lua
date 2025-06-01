@@ -170,6 +170,18 @@ require('lazy').setup({
     },
   },
 
+  {
+    'luckasRanarison/tailwind-tools.nvim',
+    name = 'tailwind-tools',
+    build = ':UpdateRemotePlugins',
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-telescope/telescope.nvim', -- optional
+      'neovim/nvim-lspconfig', -- optional
+    },
+    opts = {}, -- your configuration
+  },
+
   'github/copilot.vim',
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -385,7 +397,7 @@ require('lazy').setup({
           map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
           -- Rename the variable under your cursor.
-          --  Most Language Servers support renaming across files, etc.
+          --  Most Language ervers support renaming across files, etc.
           map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
@@ -464,7 +476,6 @@ require('lazy').setup({
         denols = {
           root_dir = require('lspconfig').util.root_pattern 'deno.json',
         },
-        volar = {},
         ts_ls = {},
       }
 
@@ -512,8 +523,12 @@ require('lazy').setup({
         filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
       }
 
+      require('lspconfig').tailwindcss.setup {
+        filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue', 'heex' },
+      }
+
       require('lspconfig').emmet_language_server.setup {
-        filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue' },
+        filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue', 'heex' },
         init_options = {
           ---@type table<string, string>
           includeLanguages = {},
@@ -535,8 +550,6 @@ require('lazy').setup({
           variables = {},
         },
       }
-
-      require('lspconfig').volar.setup {}
     end,
   },
 
@@ -783,7 +796,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'elixir', 'heex', 'eex' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
