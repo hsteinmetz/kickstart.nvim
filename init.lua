@@ -472,6 +472,7 @@ require('lazy').setup({
           root_dir = require('lspconfig').util.root_pattern 'deno.json',
           enable = require('lspconfig').util.root_pattern 'deno.json',
         },
+        vue_ls = {},
         ts_ls = {
           init_options = {
             plugins = {
