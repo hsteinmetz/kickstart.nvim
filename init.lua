@@ -414,7 +414,7 @@ require('lazy').setup({
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, tostring(event.buf)) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -451,14 +451,9 @@ require('lazy').setup({
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
-      local servers = {
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        -- ts_ls = {},
-        --
+      local vue_language_server_path = vim.fn.expand '$MASON/packages/vue-language-server' .. '/node_modules/@vue/language-server'
 
+      local servers = {
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -475,8 +470,43 @@ require('lazy').setup({
         },
         denols = {
           root_dir = require('lspconfig').util.root_pattern 'deno.json',
+          enable = require('lspconfig').util.root_pattern 'deno.json',
         },
-        ts_ls = {},
+        ts_ls = {
+          init_options = {
+            plugins = {
+              {
+                name = '@vue/typescript-plugin',
+                location = vue_language_server_path,
+                languages = { 'vue' },
+              },
+            },
+          },
+          filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+        },
+        elixirls = {},
+        tailwindcss = {
+          root_dir = require('lspconfig').util.root_pattern 'tailwind.config.js',
+          filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue', 'heex' },
+        },
+        emmet_ls = {
+          filetypes = { 'html', 'css', 'javascript', 'javascriptreact', 'typescriptreact', 'vue', 'heex' },
+        },
+        basedpyright = {
+          settings = {
+            basedpyright = {
+              analysis = {
+                typeCheckingMode = 'standard',
+              },
+            },
+          },
+        },
+        html = {
+          filetypes = { 'html', 'eruby', 'heex', 'eex' },
+          init_options = {
+            provideFormatter = false, -- Disable HTML formatter
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -485,7 +515,6 @@ require('lazy').setup({
       --    :Mason
       --
       --  You can press `g?` for help in this menu.
-      require('mason').setup()
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
@@ -496,60 +525,12 @@ require('lazy').setup({
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
+        automatic_enable = vim.tbl_keys(servers or {}),
       }
 
-      local mason_registry = require 'mason-registry'
-      local vue_language_server_path = vim.fn.expand '$MASON/packages/vue-language-server' .. '/node_modules/@vue/language-server'
-      require('lspconfig').ts_ls.setup {
-        init_options = {
-          plugins = {
-            {
-              name = '@vue/typescript-plugin',
-              location = vue_language_server_path,
-              languages = { 'vue' },
-            },
-          },
-        },
-        filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
-      }
-
-      require('lspconfig').tailwindcss.setup {
-        filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue', 'heex' },
-      }
-
-      require('lspconfig').emmet_language_server.setup {
-        filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue', 'heex' },
-        init_options = {
-          ---@type table<string, string>
-          includeLanguages = {},
-          --- @type string[]
-          excludeLanguages = {},
-          --- @type string[]
-          extensionsPath = {},
-          --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/preferences/)
-          preferences = {},
-          --- @type boolean Defaults to `true`
-          showAbbreviationSuggestions = true,
-          --- @type "always" | "never" Defaults to `"always"`
-          showExpandedAbbreviation = 'always',
-          --- @type boolean Defaults to `false`
-          showSuggestionsAsSnippets = false,
-          --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/syntax-profiles/)
-          syntaxProfiles = {},
-          --- @type table<string, string> [Emmet Docs](https://docs.emmet.io/customization/snippets/#variables)
-          variables = {},
-        },
-      }
+      for server_name, config in pairs(servers) do
+        vim.lsp.config(server_name, config)
+      end
     end,
   },
 

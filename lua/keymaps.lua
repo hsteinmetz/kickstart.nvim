@@ -71,3 +71,8 @@ end, { desc = '[S]earch [/] in Open Files' })
 vim.keymap.set('n', '<leader>sn', function()
   builtin.find_files { cwd = vim.fn.stdpath 'config' }
 end, { desc = '[S]earch [N]eovim files' })
+
+vim.diagnostic.config {
+  virtual_text = true,
+}
+vim.keymap.set('n', '<leader>lq', ':lua vim.diagnostic.open_float()<cr>', { desc = '[L]sp [Q]uickfix' })
