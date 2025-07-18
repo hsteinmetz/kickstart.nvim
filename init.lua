@@ -487,7 +487,47 @@ require('lazy').setup({
         },
         elixirls = {},
         tailwindcss = {
-          root_dir = require('lspconfig').util.root_pattern 'tailwind.config.js',
+          root_dir = function(fname)
+            local util = require 'lspconfig.util'
+            local root = util.root_pattern('tailwind.config.js', 'tailwind.config.ts', 'package.json')(fname)
+            if not root then
+              return nil
+            end
+
+            -- Return early if tailwind config file is present
+            local config_files = {
+              'tailwind.config.js',
+              'tailwind.config.ts',
+              'tailwind.config.cjs',
+              'tailwind.config.mjs',
+            }
+
+            for _, config in ipairs(config_files) do
+              if vim.fn.filereadable(root .. '/' .. config) == 1 then
+                return root
+              end
+            end
+
+            -- Fallback to checking package.json
+            local nuxt_config_path = root .. '/nuxt.config.ts'
+            if vim.fn.filereadable(nuxt_config_path) == 0 then
+              return nil
+            end
+
+            local content = vim.fn.readfile(nuxt_config_path)
+            local ok, decoded = pcall(vim.fn.json_decode, table.concat(content, '\n'))
+            if not ok or type(decoded) ~= 'table' then
+              return nil
+            end
+
+            local modules = vim.tbl_extend('force', decoded.modules or {}, decoded.devDependencies or {})
+            print(vim.inspect(modules))
+            if modules['@nuxt/ui'] then
+              return root
+            end
+
+            return nil
+          end,
           filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact', 'vue', 'heex' },
         },
         emmet_ls = {
