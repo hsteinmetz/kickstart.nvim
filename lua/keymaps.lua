@@ -52,6 +52,7 @@ vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find exis
 vim.keymap.set('n', '<leader>sy', builtin.lsp_document_symbols, { desc = '[S]earch document S[y]mbols' })
 vim.keymap.set('n', '<leader>sY', builtin.lsp_workspace_symbols, { desc = '[S]earch workspace S[Y]mbols' })
 vim.keymap.set('n', '<leader>sm', builtin.marks, { desc = '[S]earch [M]arks' })
+vim.keymap.set('n', '<leader>lf', vim.lsp.buf.format, { desc = '[L]SP Format' })
 
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to Telescope to change the theme, layout, etc.
