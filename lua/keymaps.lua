@@ -23,6 +23,7 @@ mapn('<C-d>', '<C-d>zz')
 mapn('<C-u>', '<C-u>zz')
 mapn('<leader>w', '<cmd>w<cr>', { desc = 'Save file' })
 mapn('<leader>o', ':update<CR> :source<CR>', { desc = 'Reload config' })
+mapn('<leader>e', ':Oil<CR>', { desc = 'Open file explorer' })
 
 -- Windows
 mapn('<leader>-', '<C-W>s', { desc = 'Split horizontally' })
